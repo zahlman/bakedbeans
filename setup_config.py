@@ -11,7 +11,7 @@ except ImportError:
 
 # The project name. Also assumed to be the name of the single package that the
 # project distribution consists of.
-name = 'sample'
+name = 'bakedbeans'
 
 # The version number.
 version = (0, 0, 1)
@@ -25,7 +25,7 @@ version_qualifiers = {}
 
 # Short-form description of the project. A long-form description should be
 # written in DESCRIPTION.rst, in ReStructured Text format with UTF-8 encoding.
-description = 'A sample Python project'
+description = 'A tool for starting new Python projects on GitHub with setuptools'
 
 # Author details. Adjust as appropriate.
 author = 'Karl Knechtel'
@@ -49,7 +49,7 @@ development_status = status.PLANNING
 supported_versions = ['3.2', '3.3', '3.4']
 
 # What does your project relate to?
-keywords = 'sample setuptools development'
+keywords = 'bakedbeans setuptools development'
 
 # Any other classifiers to add, beyond the ones automatically generated.
 # See https://pypi.python.org/pypi?%3Aaction=list_classifiers for classifiers.
@@ -69,7 +69,7 @@ dependencies = []
 package_data = []
 
 # Console scripts. Mapping from script name to fully qualified function name.
-console_scripts = {'sample': 'sample.main'}
+console_scripts = {'bakedbeans': 'bakedbeans.main'}
 
 # GUI scripts. Mapping from script name to fully qualified function name.
 gui_scripts = {}
