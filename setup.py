@@ -95,7 +95,8 @@ options = {
 		('Programming Language', 'Python'), *config.supported_versions
 	),
 	'keywords': config.keywords,
-	'packages': ['src'],
+	'package_dir': {'': 'src'},
+	'packages': [config.name],
 	'install_requires': config.dependencies
 }
 

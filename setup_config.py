@@ -69,7 +69,7 @@ dependencies = []
 package_data = []
 
 # Console scripts. Mapping from script name to fully qualified function name.
-console_scripts = {'bakedbeans': 'bakedbeans.main'}
+console_scripts = {'bakedbeans': 'bakedbeans.main.main'}
 
 # GUI scripts. Mapping from script name to fully qualified function name.
 gui_scripts = {}
