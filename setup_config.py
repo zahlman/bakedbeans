@@ -14,7 +14,7 @@ except ImportError:
 name = 'sample'
 
 # The version number.
-version = (1, 2, 1)
+version = (0, 0, 1)
 # Qualifications for the version number - epoch, pre-release version,
 # post-release version and development version number, if applicable.
 # Allowable keys: 'epoch', 'dev';

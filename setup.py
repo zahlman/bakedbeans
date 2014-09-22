@@ -66,13 +66,19 @@ def make_version(*args, **kwargs):
 
 here = path.abspath(path.dirname(__file__))
 
+version = make_version(*config.version, **config.version_qualifiers)
+
+# Write a __version__.py file.
+with open(path.join(here, 'src', '__version__.py'), mode='w') as f:
+	f.write('__version__ = {!r}'.format(version))
+
 # Get the long description from the relevant file
-with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'DESCRIPTION.rst')) as f:
 	long_description = f.read()
 
 options = {
 	'name': config.name,
-	'version': make_version(*config.version, **config.version_qualifiers),
+	'version': version,
 	'description': config.description,
 	'long_description': long_description,
 	'url': config.url,

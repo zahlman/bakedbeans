@@ -1,4 +1,5 @@
-
-def main():
-    """Entry point for the application script"""
-    print("Call your main application code here")
+try:
+	from .__version__ import __version__
+except ImportError:
+	pass # development version
+__all__ = ['bakedbeans']
