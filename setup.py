@@ -89,12 +89,12 @@ options = {
 		('Programming Language', 'Python'), *config.supported_versions
 	),
 	'keywords': config.keywords,
-	'packages': [config.name],
+	'packages': ['src'],
 	'install_requires': config.dependencies
 }
 
 options['package_data'] = {
-	config.name: config.package_data + [
+	'src': config.package_data + [
 		'../DESCRIPTION.rst', '../setup_config.py'
 	]
 }
