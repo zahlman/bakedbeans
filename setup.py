@@ -1,7 +1,7 @@
 from ez_setup import use_setuptools
 use_setuptools()
 from setuptools import setup, find_packages
-from os import path, chdir
+from os import path, chdir, remove
 import setup_config as config
 import subprocess
 
@@ -113,6 +113,10 @@ def do_setup():
 		# need to be properly escaped.
 		for line in git.stdout:
 			f.write('include {}'.format(line.decode('utf-8')))
+		# Don't include the auto-generated MANIFEST.in itself.
+		f.write('exclude MANIFEST.in\n')
+		for line in config.extra_manifest:
+			f.write(line + '\n')
 
 	# Set basic options.
 	options = {
@@ -141,10 +145,12 @@ def do_setup():
 
 	entry_points = {}
 	for script_type in ('console_scripts', 'gui_scripts'):
-		entry_points[script_type] = [
-			'{}={}'.format(k, ':'.join(v.rpartition('.')[::2]))
+		scripts = [
+			'{}={}'.format(k, v)
 			for k, v in getattr(config, script_type, {}).items()
 		]
+		if scripts:
+			entry_points[script_type] = scripts
 
 	if entry_points:
 		options['entry_points'] = entry_points
@@ -153,10 +159,8 @@ def do_setup():
 	options.update(config.extra_options)
 
 	# Finally ready.
-	import pprint
-	print("DEBUG:")
-	pprint.pprint(options)
 	setup(**options)
+	remove('MANIFEST.in')
 
 
 do_setup()

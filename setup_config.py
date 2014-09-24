@@ -37,12 +37,12 @@ additional_classifiers = (
   ('Topic', ('Software Development', 'Build Tools'))
 )
 
-# List run-time dependencies here.  These will be installed by pip when the
+# List run-time dependencies here. These will be installed by pip when the
 # project is installed.
 dependencies = []
 
-# Console scripts. Mapping from script name to fully qualified function name.
-console_scripts = {'bakedbeans': 'bakedbeans.main.main'}
+# Console scripts. Mapping from script name to package.module:global.callable.
+console_scripts = {'bakedbeans': 'bakedbeans.main:main'}
 
 # GUI scripts. Mapping from script name to fully qualified function name.
 gui_scripts = {}
@@ -66,3 +66,8 @@ url_template = 'https://github.com/zahlman/{}'
 # Any other setuptools options you need to provide (or explicitly override
 # for some reason).
 extra_options = {}
+
+# Additional instructions for the MANIFEST.in file, after including every
+# file found in the git repository. (You might use this, for example, to
+# exclude tests from distribution.)
+extra_manifest = ['prune *tests*']
