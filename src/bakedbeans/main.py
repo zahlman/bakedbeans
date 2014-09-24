@@ -5,6 +5,39 @@ except ImportError:
 	version_string = ''
 
 
+from shutil import move, copytree
+from os.path import isfile as is_file, isdir as is_directory, join as path
+from os.path import dirname, abspath, basename, splitext
+
+
+def project_name(filename):
+	return splitext(basename(filename))[0]
+
+
+def location_of(thing):
+	return dirname(abspath(thing))
+
+
+def new_project_folder(here, source):
+	"""Create a new bakedbeans project folder."""
+	there = location_of(source)
+	if is_file(source):
+		name = project_name(source)
+		# Fail fast if the project folder couldn't be made.
+		project_root = path(there, name)
+		# TODO: make this sync up with package_dir in setup.py
+		package_root = path(there, name, 'src', name)
+		copytree(path(here, 'project_template'), path(there, name))
+		copytree(path(here, 'package_template'), path(there, name, 'src', name))
+		move(source, path(there, name, 'src', name))
+		# TODO: git stuff
+	elif is_directory(source):
+		# TODO
+		print("not implemented yet.")
+	else:
+		raise OSError("couldn't find file or directory")
+
+
 def update_config_file(path, **updates):
 	"""Open the setup_config.py file at the named path and update the options.
 
@@ -27,11 +60,6 @@ def setup_git_repo(project_folder):
 	pass # TODO
 
 
-def setup_project_folder(project_folder):
-	"""Create a new bakedbeans project folder."""
-	pass # TODO
-	# copy in the project_template files
-	# update_config_file(path, name=project_name)
 
 
 def new_project_from(path):
@@ -51,7 +79,9 @@ def new_project_from(path):
 def main():
 	import sys
 	print("Baked Beans{} main script".format(version_string))
-	print("args:", sys.argv)
+	args, here = sys.argv[1:], location_of(__file__)
+	print("here: {} args: {}".format(here, args))
+	new_project_folder(here, args[0])
 
 
 if __name__ == '__main__':
