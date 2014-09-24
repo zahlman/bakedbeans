@@ -1,17 +1,35 @@
-from setuptools import setup
-from os import path
+from ez_setup import use_setuptools
+use_setuptools()
+from setuptools import setup, find_packages
+from os import path, chdir
 import setup_config as config
+import subprocess
 
 
-development_status_names = [
-	'1 - Planning',
-	'2 - Pre-Alpha',
-	'3 - Alpha',
-	'4 - Beta',
-	'5 - Production/Stable',
-	'6 - Mature',
-	'7 - Inactive'
-]
+def interpret_dev_status(status):
+	names = 'Planning Pre-Alpha Alpha Beta Production/Stable Mature Inactive'
+	mapping = {}
+	for i, name in enumerate(names.split(), 1):
+		k, v = name.lower(), '{} - {}'.format(i, name)
+		mapping[k] = v
+		mapping[i] = v
+		mapping[k.replace('-', '')] = v
+		for c in k.split('/'):
+			mapping[c] = v
+
+	try:
+		status = int(status[0]) # string starting with a digit?
+	except:
+		pass
+
+	try:
+		return mapping[status]
+	except KeyError:
+		raise ValueError(''.join(
+			'invalid development status: must be integer 1-7,',
+			'or string beginning with digit 1-7,',
+			'or valid development status name'
+		))
 
 
 def make_classifiers_gen(breadcrumb, *options):
@@ -64,64 +82,81 @@ def make_version(*args, **kwargs):
 	return result
 
 
-here = path.abspath(path.dirname(__file__))
+def do_setup():
+	here = path.dirname(path.abspath(__file__))
+	project_name = path.split(here)[1]
 
-version = make_version(*config.version, **config.version_qualifiers)
+	packages = find_packages(
+		config.source_dir,
+		exclude = config.exclude_packages,
+		include = config.include_packages
+	)
 
-# Write a __version__.py file.
-with open(path.join(here, 'src', '__version__.py'), mode='w') as f:
-	f.write('__version__ = {!r}'.format(version))
+	version = make_version(*config.version, **config.version_qualifiers)
 
-# Get the long description from the relevant file
-with open(path.join(here, 'DESCRIPTION.rst')) as f:
-	long_description = f.read()
+	# Write a __version__.py file to each package.
+	for package in packages:
+		with open(path.join(here, 'src', package, '__version__.py'), mode='w') as f:
+			f.write('__version__ = {!r}'.format(version))
 
-options = {
-	'name': config.name,
-	'version': version,
-	'description': config.description,
-	'long_description': long_description,
-	'url': config.url,
-	'author': config.author,
-	'author_email': config.author_email,
-	'license': config.license,
-	'classifiers': make_classifiers(
-		('Development Status', development_status_names[config.development_status - 1])
-	) + make_classifiers(
-		(), *config.additional_classifiers
-	) + make_classifiers(
-		('License',), config.license_long
-	) + make_classifiers(
-		('Programming Language', 'Python'), *config.supported_versions
-	),
-	'keywords': config.keywords,
-	'package_dir': {'': 'src'},
-	'packages': [config.name],
-	'install_requires': config.dependencies
-}
+	# Get the long description from the relevant file.
+	with open(path.join(here, 'DESCRIPTION.rst')) as f:
+		long_description = f.read()
 
-options['package_data'] = {
-	'src': config.package_data + [
-		'../DESCRIPTION.rst', '../setup_config.py'
-	]
-}
+	# Enumerate files to include.
+	with open(path.join(here, 'MANIFEST.in'), 'w') as f:
+		chdir(here)
+		git = subprocess.Popen(['git', 'ls-files'], stdout=subprocess.PIPE)
+		# FIXME: This doesn't actually properly handle Unicode, because git
+		# does some weird re-encoding thing with Unicode filenames.
+		# FIXME: Filenames with special characters (ones used for globbing)
+		# need to be properly escaped.
+		for line in git.stdout:
+			f.write('include {}'.format(line.decode('utf-8')))
 
-# TODO: look for a 'data' directory and set up data_files if appropriate
-# Although 'package_data' is the preferred approach, in some case you may
-# need to place data files outside of your packages.
-# see http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files
-# In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-# data_files=[('my_data', ['data/data_file'])],
+	# Set basic options.
+	options = {
+		'name': project_name,
+		'version': version,
+		'description': config.description,
+		'long_description': long_description,
+		'url': config.url_template.format(project_name),
+		'author': config.author,
+		'author_email': config.author_email,
+		'license': config.license,
+		'classifiers': make_classifiers(
+			('Development Status', interpret_dev_status(config.development_status))
+		) + make_classifiers(
+			(), *config.additional_classifiers
+		) + make_classifiers(
+			('License',), config.license_long
+		) + make_classifiers(
+			('Programming Language', 'Python'), *config.supported_versions
+		),
+		'keywords': config.keywords,
+		'package_dir': {'': config.source_dir},
+		'packages': packages,
+		'install_requires': config.dependencies,
+	}
 
-entry_points = {}
-for script_type in ('console_scripts', 'gui_scripts'):
-	entry_points[script_type] = [
-		'{}={}'.format(k, ':'.join(v.rpartition('.')[::2]))
-		for k, v in getattr(config, script_type, {}).items()
-	]
+	entry_points = {}
+	for script_type in ('console_scripts', 'gui_scripts'):
+		entry_points[script_type] = [
+			'{}={}'.format(k, ':'.join(v.rpartition('.')[::2]))
+			for k, v in getattr(config, script_type, {}).items()
+		]
 
-if entry_points:
-	options['entry_points'] = entry_points
+	if entry_points:
+		options['entry_points'] = entry_points
 
-# Finally ready.
-setup(**options)
+	# Add anything else explicitly specified by the user.
+	options.update(config.extra_options)
+
+	# Finally ready.
+	import pprint
+	print("DEBUG:")
+	pprint.pprint(options)
+	setup(**options)
+
+
+do_setup()
