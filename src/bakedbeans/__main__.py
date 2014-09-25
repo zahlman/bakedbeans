@@ -98,7 +98,7 @@ def new_project_folder(here, source, data):
 
 	there = location_of(source)
 	if is_file(source):
-		name = project_name(source)
+		name = data['project_name']
 		# Fail fast if the project folder couldn't be made.
 		project_root = path(there, name)
 		# TODO: make this sync up with package_dir in setup.py
@@ -114,7 +114,7 @@ def new_project_folder(here, source, data):
 
 
 def prompt_missing_info(data, key, prompt):
-	if not key in data:
+	if data.get(key, None) is None:
 		print()
 		message('Please supply {}.'.format(clean(prompt)))
 		data[key] = input('{}: '.format(key.title()))
@@ -132,56 +132,60 @@ def get_github_info(data, username):
 		('name', 'name'),
 		('email', 'email')
 	):
-		# Skip empty strings, JSON null, etc., as well as missing data.
-		value = result.get(github_name, None)
-		if value:
-			data[my_name] = value
+		data[my_name] = result.get(github_name, None)
+
+
+def firstrun(here):
+	# First run.
+	print("Welcome to Baked Beans!")
+	data = {}
+	message("""
+		To get started, a few pieces of information are needed so they can be
+		filled in for each new project you start. If you're already on GitHub,
+		you can fill in your user ID and as much information as possible will be
+		looked up automatically for you. Or you can leave it blank and enter the
+		rest manually.
+	""")
+	username = input("Enter your GitHub user ID (optional): ")
+	if username:
+		get_github_info(data, username)
+	prompt_missing_info(data, 'name', """
+		your full name, as you would like it to appear on projects you publish
+	""")
+	prompt_missing_info(data, 'url', """
+		a base URL for your projects, including http:// or https:// as desired.
+		The default project URL for each new project will be of the form
+		<base url>/<project name>.
+	""")
+	prompt_missing_info(data, 'email', """
+		an email where you can be reached for project support
+	""")
+
+	copy_template_tree(path(here, 'tin.template'), path(here, 'tin'), data)
+	if not DEVELOPMENT_VERSION:
+		rmtree(path(here, 'tin.template'))
+
+	print("Great! Now, let's set up your first project...")
 
 
 def main():
-	import sys
+	import argparse
+	parser = argparse.ArgumentParser(prog='bakedbeans', description='A tool for starting new Python projects hosted on Github, targeting Windows.')
+	parser.add_argument('source', nargs='?', help='file or folder to make a new project from')
+	parser.add_argument('-d', '--description', help='short project description')
+	data = vars(parser.parse_args())
+
 	print("Baked Beans{} main script".format(VERSION_STRING))
-	args, here = sys.argv[1:], location_of(__file__)
+	here = location_of(__file__)
 
 	if not is_directory(path(here, 'tin')):
-		# First run.
-		print("Welcome to Baked Beans!")
-		data = {}
-		message("""
-			To get started, a few pieces of information are needed so they can be
-			filled in for each new project you start. If you're already on GitHub,
-			you can fill in your user ID and as much information as possible will be
-			looked up automatically for you. Or you can leave it blank and enter the
-			rest manually.
-		""")
-		username = input("Enter your GitHub user ID (optional): ")
-		if username:
-			get_github_info(data, username)
-		prompt_missing_info(data, 'name', """
-			your full name, as you would like it to appear on projects you publish
-		""")
-		prompt_missing_info(data, 'url', """
-			a base URL for your projects, including http:// or https:// as desired.
-			The default project URL for each new project will be of the form
-			<base url>/<project name>.
-		""")
-		prompt_missing_info(data, 'email', """
-			an email where you can be reached for project support
-		""")
+		firstrun(here)
 
-		copy_template_tree(path(here, 'tin.template'), path(here, 'tin'), data)
-		if not DEVELOPMENT_VERSION:
-			rmtree(path(here, 'tin.template'))
-
-		print("Great! Now, let's set up your first project...")
-
-	if args:
-		# TODO: fill in the data for the copy
-		new_project_folder(here, args[0], {})
-	else:
-		# interactive mode - TODO
-		pass
-
+	prompt_missing_info(data, 'source', 'the path to the project folder, or a .py file to create a new project from')
+	prompt_missing_info(data, 'description', 'a brief description of the project')
+	source = data.pop('source')
+	data['project_name'] = project_name(source)
+	new_project_folder(here, source, data)
 	print("All done!")
 
 
