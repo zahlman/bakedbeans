@@ -2,7 +2,6 @@ from ez_setup import use_setuptools
 use_setuptools()
 from setuptools import setup, find_packages
 from os import path, chdir, remove
-import setup_config as config
 import subprocess
 
 
@@ -82,9 +81,7 @@ def make_version(*args, **kwargs):
 	return result
 
 
-def do_setup():
-	here = path.dirname(path.abspath(__file__))
-
+def do_setup(here, config):
 	packages = find_packages(
 		config.source_dir,
 		exclude = config.exclude_packages,
@@ -140,6 +137,7 @@ def do_setup():
 		'package_dir': {'': config.source_dir},
 		'packages': packages,
 		'install_requires': config.dependencies,
+		'include_package_data': True
 	}
 
 	entry_points = {}
@@ -162,4 +160,6 @@ def do_setup():
 	remove('MANIFEST.in')
 
 
-do_setup()
+if __name__ == '__main__':
+	import setup_config
+	do_setup(path.dirname(path.abspath(__file__)), setup_config)

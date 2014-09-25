@@ -1,12 +1,14 @@
+project_name = 'bakedbeans'
+
 # The version number.
-version = (0, 0, 1)
+version = (0, 0, 2)
 # Qualifications for the version number - epoch, pre-release version,
 # post-release version and development version number, if applicable.
 # Allowable keys: 'epoch', 'dev';
 # at most one of 'post', 'rev', 'r';
 # and at most one of 'a', 'b', 'c', 'alpha', 'beta', 'rc', 'pre', 'preview'.
 # See PEP 440 for more information.
-version_qualifiers = {}
+version_qualifiers = { }
 
 # Short-form description of the project. A long-form description should be
 # written in DESCRIPTION.rst, in ReStructured Text format with UTF-8 encoding.
@@ -45,29 +47,29 @@ dependencies = []
 console_scripts = {'bakedbeans': 'bakedbeans.main:main'}
 
 # GUI scripts. Mapping from script name to fully qualified function name.
-gui_scripts = {}
+gui_scripts = { }
 
 # Where packages are stored.
 source_dir = 'src'
 # Things to include or exclude explicitly when searching for packages.
 # See documentation for setuptools.find_packages.
 include_packages = ('*',)
-exclude_packages = ('*template*',)
+exclude_packages = ()
 
 # Author details. Adjust as appropriate.
 author = 'Karl Knechtel'
 author_email = 'zahlman@gmail.com'
 
 # Modify this if your Github user ID changes or if you aren't hosting the
-# project on Github. Include a single pair of braces where the project name
-# will be substituted; double-up or URL-encode any other necessary braces.
-url_template = 'https://github.com/zahlman/{}'
+# project on Github.
+url = 'https://github.com/zahlman/bakedbeans'
 
 # Any other setuptools options you need to provide (or explicitly override
 # for some reason).
-extra_options = {}
+extra_options = { }
 
 # Additional instructions for the MANIFEST.in file, after including every
 # file found in the git repository. (You might use this, for example, to
 # exclude tests from distribution.)
 extra_manifest = ['prune *tests*']
+

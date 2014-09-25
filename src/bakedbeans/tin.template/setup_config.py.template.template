@@ -12,7 +12,7 @@ version_qualifiers = { }
 
 # Short-form description of the project. A long-form description should be
 # written in DESCRIPTION.rst, in ReStructured Text format with UTF-8 encoding.
-description = 'A tool for starting new Python projects on GitHub with setuptools'
+description = {description}
 
 # Licensing.
 license = 'MIT'
@@ -27,24 +27,21 @@ development_status = 'planning'
 supported_versions = ['3.2', '3.3', '3.4']
 
 # What does your project relate to?
-keywords = 'bakedbeans setuptools development'
+keywords = ''
 
 # Any other classifiers to add, beyond the ones automatically generated.
 # See https://pypi.python.org/pypi?%3Aaction=list_classifiers for classifiers.
 # For each classifier, specify a sequence of items to join with ' :: ';
 # or use nested sequences to group multiple classifiers (see the documentation
 # for setup.make_classifiers).
-additional_classifiers = (
-	('Intended Audience', 'Developers'),
-  ('Topic', ('Software Development', 'Build Tools'))
-)
+additional_classifiers = ()
 
 # List run-time dependencies here. These will be installed by pip when the
 # project is installed.
 dependencies = []
 
 # Console scripts. Mapping from script name to package.module:global.callable.
-console_scripts = {@<}'bakedbeans': 'bakedbeans.main:main'{@>}
+console_scripts = { }
 
 # GUI scripts. Mapping from script name to fully qualified function name.
 gui_scripts = { }
