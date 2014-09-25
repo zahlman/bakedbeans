@@ -1,7 +1,7 @@
 project_name = 'bakedbeans'
 
 # The version number.
-version = (0, 0, 2)
+version = (0, 0, 3)
 # Qualifications for the version number - epoch, pre-release version,
 # post-release version and development version number, if applicable.
 # Allowable keys: 'epoch', 'dev';
@@ -44,7 +44,7 @@ additional_classifiers = (
 dependencies = []
 
 # Console scripts. Mapping from script name to package.module:global.callable.
-console_scripts = {'bakedbeans': 'bakedbeans.main:main'}
+console_scripts = {'bakedbeans': 'bakedbeans.__main__:main'}
 
 # GUI scripts. Mapping from script name to fully qualified function name.
 gui_scripts = { }

@@ -1,15 +1,32 @@
 try:
 	from .__version__ import __version__
-	version_string = ' v{}'.format(__version__)
 except ImportError:
-	version_string = ''
+	VERSION_STRING = ''
+	DEVELOPMENT_VERSION = True
+else:
+	VERSION_STRING = ' v{}'.format(__version__)
+	DEVELOPMENT_VERSION = False
 
 
-from shutil import move, copytree, copy, rmtree
+from shutil import move, copytree, copy, rmtree, get_terminal_size
 from os import makedirs as make_directory, listdir as directory_contents
 from os.path import isfile as is_file, isdir as is_directory, join as path
 from os.path import dirname, abspath, basename, splitext, exists
 from functools import partial
+import json, codecs
+from urllib.request import urlopen as open_url
+from textwrap import wrap, dedent
+
+
+def clean(text):
+	return dedent(text).strip('\r\n')
+
+
+def message(text):
+	print(
+		*wrap(clean(text), get_terminal_size().columns - 1),
+		sep='\n'
+	)
 
 
 def project_name(filename):
@@ -43,7 +60,6 @@ def template_copy(data, source, there):
 	here, name = location_of(source), basename(source)
 	if name.endswith('.template'):
 		there = splitext(there)[0]
-		print("Debug: template copy from {} to {}".format(source, there))
 		with open(source) as infile, open(there, 'w') as outfile:
 			for line in infile:
 				outfile.write(line.format_map(mapping(data)))
@@ -97,22 +113,67 @@ def new_project_folder(here, source, data):
 		raise OSError("couldn't find file or directory")
 
 
+def prompt_missing_info(data, key, prompt):
+	if not key in data:
+		print()
+		message('Please supply {}.'.format(clean(prompt)))
+		data[key] = input('{}: '.format(key.title()))
+
+
+def get_github_info(data, username):
+	try:
+		result = json.load(codecs.getreader('utf-8')(open_url(
+			'https://api.github.com/users/{}'.format(username)
+		)))
+	except:
+		return # oh well, prompt for it all explicitly.
+	for github_name, my_name in (
+		('html_url', 'url'),
+		('name', 'name'),
+		('email', 'email')
+	):
+		# Skip empty strings, JSON null, etc., as well as missing data.
+		value = result.get(github_name, None)
+		if value:
+			data[my_name] = value
+
+
 def main():
 	import sys
-	print("Baked Beans{} main script".format(version_string))
+	print("Baked Beans{} main script".format(VERSION_STRING))
 	args, here = sys.argv[1:], location_of(__file__)
-	print("here: {} args: {}".format(here, args))
 
 	if not is_directory(path(here, 'tin')):
 		# First run.
-		print("Welcome! Please answer a few quick questions to set up the tin.")
+		print("Welcome to Baked Beans!")
+		data = {}
+		message("""
+			To get started, a few pieces of information are needed so they can be
+			filled in for each new project you start. If you're already on GitHub,
+			you can fill in your user ID and as much information as possible will be
+			looked up automatically for you. Or you can leave it blank and enter the
+			rest manually.
+		""")
+		username = input("Enter your GitHub user ID (optional): ")
+		if username:
+			get_github_info(data, username)
+		prompt_missing_info(data, 'name', """
+			your full name, as you would like it to appear on projects you publish
+		""")
+		prompt_missing_info(data, 'url', """
+			a base URL for your projects, including http:// or https:// as desired.
+			The default project URL for each new project will be of the form
+			<base url>/<project name>.
+		""")
+		prompt_missing_info(data, 'email', """
+			an email where you can be reached for project support
+		""")
 
-		copy_template_tree(
-			path(here, 'tin.template'),
-			path(here, 'tin'),
-			{} # TODO: prompt user for this information
-		)
-		# rmtree(path(here, 'tin.template'))
+		copy_template_tree(path(here, 'tin.template'), path(here, 'tin'), data)
+		if not DEVELOPMENT_VERSION:
+			rmtree(path(here, 'tin.template'))
+
+		print("Great! Now, let's set up your first project...")
 
 	if args:
 		# TODO: fill in the data for the copy
@@ -120,6 +181,8 @@ def main():
 	else:
 		# interactive mode - TODO
 		pass
+
+	print("All done!")
 
 
 if __name__ == '__main__':

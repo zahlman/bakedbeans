@@ -59,7 +59,7 @@ author_email = '{email}'
 
 # Modify this if your Github user ID changes or if you aren't hosting the
 # project on Github.
-url = '{url}{project_name}'
+url = '{url}/{project_name}'
 
 # Any other setuptools options you need to provide (or explicitly override
 # for some reason).
