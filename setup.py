@@ -84,7 +84,7 @@ def make_version(*args, **kwargs):
 
 def do_setup():
 	here = path.dirname(path.abspath(__file__))
-	project_name = path.split(here)[1]
+	project_name = 'bakedbeans'
 
 	packages = find_packages(
 		config.source_dir,
@@ -141,6 +141,7 @@ def do_setup():
 		'package_dir': {'': config.source_dir},
 		'packages': packages,
 		'install_requires': config.dependencies,
+		'include_package_data': True
 	}
 
 	entry_points = {}
