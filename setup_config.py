@@ -1,7 +1,7 @@
 project_name = 'bakedbeans'
 
 # The version number.
-version = (0, 0, 3)
+version = (0, 1, 20)
 # Qualifications for the version number - epoch, pre-release version,
 # post-release version and development version number, if applicable.
 # Allowable keys: 'epoch', 'dev';
@@ -12,7 +12,7 @@ version_qualifiers = { }
 
 # Short-form description of the project. A long-form description should be
 # written in DESCRIPTION.rst, in ReStructured Text format with UTF-8 encoding.
-description = 'A tool for starting new Python projects on GitHub with setuptools'
+description = 'A tool for starting new Python projects on GitHub with setuptools.'
 
 # Licensing.
 license = 'MIT'

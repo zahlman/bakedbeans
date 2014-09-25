@@ -170,7 +170,7 @@ def firstrun(here):
 
 def main():
 	import argparse
-	parser = argparse.ArgumentParser(prog='bakedbeans', description='A tool for starting new Python projects hosted on Github, targeting Windows.')
+	parser = argparse.ArgumentParser(prog='bakedbeans', description='A tool for starting new Python projects on GitHub with setuptools.')
 	parser.add_argument('source', nargs='?', help='file or folder to make a new project from')
 	parser.add_argument('-d', '--description', help='short project description')
 	data = vars(parser.parse_args())
