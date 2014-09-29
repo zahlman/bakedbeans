@@ -16,18 +16,18 @@ from setuptools.command.install import install as _install
 
 # http://stackoverflow.com/a/18159969/523612
 def make_shortcut(script_dir):
-	with open(path(expanduser('~'), 'desktop', 'bakedbeans.bat'), 'w') as bat:
-		bat.write('@echo off\n"{}\\bakedbeans.exe" %*\npause'.format(script_dir))
+    with open(path(expanduser('~'), 'desktop', 'bakedbeans.bat'), 'w') as bat:
+        bat.write('@echo off\n"{}\\bakedbeans.exe" %*\npause'.format(script_dir))
 
 
 class install(_install):
-	def run(self):
-		super().run()
-		self.execute(
-			make_shortcut,
-			(self.install_scripts,),
-			msg="Creating desktop shortcut"
-		)
+    def run(self):
+        super().run()
+        self.execute(
+            make_shortcut,
+            (self.install_scripts,),
+            msg="Creating desktop shortcut"
+        )
 
 
 setup_config.extra_options['cmdclass'] = {'install': install}
